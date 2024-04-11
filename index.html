@@ -1,91 +1,353 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="pt-BR">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Sorteador Online</title>
-<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
-<style>
-    body {
-        background-color: #1a1a1a;
-        color: #fff;
-        text-align: center;
-        margin: 0;
-        padding: 0;
-    }
-    #container {
-        display: flex;
-        justify-content: center;
-        align-items: center;
-        height: 100vh;
-    }
-</style>
-</head>
-<body>
-
-<div id="container">
-    <div class="container">
-        <div class="card bg-dark text-white">
-            <div class="card-body">
-                <h2 class="card-title">Sorteador Online</h2>
-                <div class="form-check form-check-inline">
-                    <input class="form-check-input" type="radio" name="tipo" id="numeros" checked>
-                    <label class="form-check-label" for="numeros">Sortear por Número</label>
-                </div>
-                <div class="form-check form-check-inline">
-                    <input class="form-check-input" type="radio" name="tipo" id="lista">
-                    <label class="form-check-label" for="lista">Sortear por Lista</label>
-                </div>
-                <div class="form-group">
-                    <label for="min">Mínimo:</label>
-                    <input type="number" class="form-control" id="min" min="1">
-                </div>
-                <div class="form-group">
-                    <label for="max">Máximo:</label>
-                    <input type="number" class="form-control" id="max" min="1">
-                </div>
-                <div class="form-group" style="display: none;" id="listaInput">
-                    <label for="listaValores">Lista de Valores (separados por vírgula):</label>
-                    <input type="text" class="form-control" id="listaValores">
-                </div>
-                <button type="button" class="btn btn-success" onclick="sortear()">Sortear</button>
-                <div id="resultado" class="mt-3"></div>
-                <button type="button" class="btn btn-primary mt-3" onclick="sortearNovamente()">Sortear Novamente</button>
-            </div>
-        </div>
-    </div>
-</div>
-
-<script>
-    function sortear() {
-        var min = parseInt(document.getElementById("min").value);
-        var max = parseInt(document.getElementById("max").value);
-        var tipo = document.querySelector('input[name="tipo"]:checked').id;
-        var listaValores = document.getElementById("listaValores").value.split(",").map(Number);
-
-        var numeroSorteado;
-
-        if (tipo === "numeros") {
-            numeroSorteado = Math.floor(Math.random() * (max - min + 1)) + min;
-        } else {
-            numeroSorteado = listaValores[Math.floor(Math.random() * listaValores.length)];
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Gerenciador de Tarefas</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f8f9fa;
+            margin: 0;
+            padding: 0;
         }
 
-        document.getElementById("resultado").innerText = "Número Sorteado: " + numeroSorteado;
-    }
+        .container {
+            max-width: 800px;
+            margin: 20px auto;
+            padding: 20px;
+            background-color: #fff;
+            border-radius: 10px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        }
 
-    function sortearNovamente() {
-        document.getElementById("resultado").innerText = "";
-    }
+        h1 {
+            text-align: center;
+            color: #007bff;
+            margin-bottom: 20px;
+        }
 
-    document.getElementById("numeros").addEventListener("change", function() {
-        document.getElementById("listaInput").style.display = "none";
-    });
+        input[type="text"],
+        textarea {
+            width: calc(100% - 20px);
+            padding: 10px;
+            margin-bottom: 10px;
+            border: 1px solid #ced4da;
+            border-radius: 5px;
+            font-size: 16px;
+            outline: none;
+        }
 
-    document.getElementById("lista").addEventListener("change", function() {
-        document.getElementById("listaInput").style.display = "block";
-    });
-</script>
+        select {
+            padding: 10px;
+            border: 1px solid #ced4da;
+            border-radius: 5px;
+            font-size: 16px;
+            outline: none;
+        }
 
+        button {
+            padding: 10px;
+            background-color: #007bff;
+            color: #fff;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: background-color 0.3s;
+            font-size: 16px;
+            margin-right: 10px;
+        }
+
+        button:hover {
+            background-color: #0056b3;
+        }
+
+        ul {
+            list-style-type: none;
+            padding: 0;
+        }
+
+        li {
+            margin-bottom: 10px;
+            padding: 15px;
+            background-color: #f1f3f5;
+            border-radius: 10px;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+            position: relative;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+        }
+
+        li:hover {
+            background-color: #e9ecef;
+        }
+
+        .task-done {
+            text-decoration: line-through;
+            color: #6c757d;
+        }
+
+        .color-picker {
+            margin-left: auto;
+            background: transparent;
+            border: none;
+            cursor: pointer;
+        }
+
+        .trash-container {
+            display: none;
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            padding: 15px;
+            background-color: #f1f3f5;
+            border-radius: 10px;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+            z-index: 1;
+        }
+
+        .trash-container h2 {
+            color: #dc3545;
+            margin-bottom: 10px;
+        }
+
+        #trashButton {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            padding: 10px;
+            font-size: 24px;
+            background-color: #dc3545;
+            color: #fff;
+            border: none;
+            border-radius: 50%;
+            cursor: pointer;
+            transition: background-color 0.3s;
+            z-index: 1;
+        }
+
+        #trashButton:hover {
+            background-color: #c82333;
+        }
+
+        .action-buttons {
+            margin-left: auto;
+        }
+
+        .action-buttons button {
+            margin-left: 6px;
+            padding: 6px 12px;
+            font-size: 14px;
+        }
+
+        /* Modal */
+        .modal {
+            display: none;
+            position: fixed;
+            z-index: 2;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            overflow: auto;
+            background-color: rgba(0, 0, 0, 0.4);
+        }
+
+        .modal-content {
+            background-color: #fefefe;
+            margin: 15% auto;
+            padding: 20px;
+            border: 1px solid #888;
+            width: 80%;
+            border-radius: 10px;
+            box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2);
+            animation-name: animatetop;
+            animation-duration: 0.4s;
+        }
+
+        .close {
+            color: #aaa;
+            float: right;
+            font-size: 28px;
+            font-weight: bold;
+        }
+
+        .close:hover,
+        .close:focus {
+            color: black;
+            text-decoration: none;
+            cursor: pointer;
+        }
+
+        @keyframes animatetop {
+            from {
+                top: -300px;
+                opacity: 0;
+            }
+            to {
+                top: 0;
+                opacity: 1;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Gerenciador de Tarefas</h1>
+        <input type="text" id="taskInput" placeholder="Adicionar nova tarefa..." onkeypress="addTaskOnEnter(event)">
+        <select id="emojiSelect">
+            <option value="✅">✅</option>
+            <option value="📌">📌</option>
+            <option value="⭐">⭐</option>
+            <option value="✏️">✏️</option>
+            <option value="📅">📅</option>
+        </select>
+        <button onclick="addTask()">Adicionar</button>
+        <ul id="taskList" ondrop="drop(event)" ondragover="allowDrop(event)"></ul>
+    </div>
+    <button id="trashButton" onclick="toggleTrash()">🗑️</button>
+    <div class="trash-container" id="trashContainer">
+        <h2>Lixeira</h2>
+        <ul id="trashList" ondrop="dropToTrash(event)" ondragover="allowDrop(event)"></ul>
+    </div>
+    <!-- Modal para adicionar detalhes -->
+    <div id="detailModal" class="modal">
+        <div class="modal-content">
+            <span class="close" onclick="closeDetailModal()">&times;</span>
+            <textarea id="taskDetails" placeholder="Adicionar detalhes..." rows="4"></textarea>
+            <button onclick="saveTaskDetails()">Salvar</button>
+        </div>
+    </div>
+    <script>
+        var draggedItem = null;
+        var colors = ["#FF6347", "#4169E1", "#32CD32", "#FF4500", "#8A2BE2", "#FFD700", "#FF69B4", "#008080"];
+
+        // Função para adicionar uma nova tarefa à lista
+        function addTask() {
+            var input = document.getElementById("taskInput");
+            var taskText = input.value.trim();
+            if (taskText !== "") {
+                var taskList = document.getElementById("taskList");
+                var li = document.createElement("li");
+                var colorPicker = document.createElement("input");
+                colorPicker.type = "color";
+                colorPicker.value = colors[Math.floor(Math.random() * colors.length)];
+                colorPicker.className = "color-picker";
+                colorPicker.addEventListener("change", function() {
+                    changeTaskColor(this);
+                });
+                li.draggable = true;
+                li.ondragstart = function(event) {
+                    draggedItem = this;
+                };
+                var selectedEmoji = document.getElementById("emojiSelect").value;
+                li.innerHTML = '<span class="emoji">' + selectedEmoji + '</span><span onclick="openDetailModal(event)">' + taskText + '</span><div class="action-buttons"><button onclick="editTask(this)">Editar</button><button onclick="deleteTask(this)">Excluir</button><button onclick="moveToTrash(this)">Mover para Lixeira</button><button onclick="applyItalic(this)">Itálico</button><button onclick="applyBold(this)">Negrito</button></div>';
+                li.appendChild(colorPicker);
+                taskList.appendChild(li);
+                input.value = "";
+            }
+        }
+
+        // Função para adicionar uma nova tarefa ao pressionar Enter
+        function addTaskOnEnter(event) {
+            if (event.key === "Enter") {
+                addTask();
+            }
+        }
+
+        // Função para marcar uma tarefa como concluída ou não concluída
+        function toggleTask(element) {
+            element.classList.toggle("task-done");
+        }
+
+        // Função para editar uma tarefa
+        function editTask(element) {
+            var li = element.parentNode.parentNode;
+            var span = li.querySelector("span:not(.emoji)");
+            var newText = prompt("Editar tarefa:", span.textContent);
+            if (newText !== null && newText.trim() !== "") {
+                span.textContent = newText;
+            }
+        }
+
+        // Função para excluir uma tarefa da lista
+        function deleteTask(element) {
+            var li = element.parentNode.parentNode;
+            li.parentNode.removeChild(li);
+        }
+
+        // Função para mover uma tarefa para a lixeira
+        function moveToTrash(element) {
+            var li = element.parentNode.parentNode;
+            var trashList = document.getElementById("trashList");
+            trashList.appendChild(li);
+        }
+
+        // Função para permitir que os itens sejam soltos na lista
+        function allowDrop(event) {
+            event.preventDefault();
+        }
+
+        // Função para soltar um item na lista
+        function drop(event) {
+            event.preventDefault();
+            if (draggedItem !== null) {
+                var taskList = document.getElementById("taskList");
+                taskList.insertBefore(draggedItem, event.target);
+                draggedItem = null;
+            }
+        }
+
+        // Função para soltar um item na lixeira
+        function dropToTrash(event) {
+            event.preventDefault();
+            if (draggedItem !== null) {
+                var trashList = document.getElementById("trashList");
+                trashList.appendChild(draggedItem);
+                draggedItem = null;
+            }
+        }
+
+        // Função para alternar a visibilidade da lixeira
+        function toggleTrash() {
+            var trashContainer = document.getElementById("trashContainer");
+            trashContainer.style.display = trashContainer.style.display === "none" ? "block" : "none";
+        }
+
+        // Função para abrir o modal de detalhes
+        function openDetailModal(event) {
+            var modal = document.getElementById("detailModal");
+            modal.style.display = "block";
+        }
+
+        // Função para fechar o modal de detalhes
+        function closeDetailModal() {
+            var modal = document.getElementById("detailModal");
+            modal.style.display = "none";
+        }
+
+        // Função para salvar os detalhes da tarefa
+        function saveTaskDetails() {
+            var details = document.getElementById("taskDetails").value;
+            // Aqui você pode fazer o que quiser com os detalhes, como salvar em algum lugar
+            console.log("Detalhes da tarefa:", details);
+            closeDetailModal();
+        }
+
+        // Função para aplicar estilo itálico ao texto da tarefa
+        function applyItalic(element) {
+            var li = element.parentNode.parentNode;
+            var span = li.querySelector("span:not(.emoji)");
+            span.style.fontStyle = "italic";
+        }
+
+        // Função para aplicar estilo negrito ao texto da tarefa
+        function applyBold(element) {
+            var li = element.parentNode.parentNode;
+            var span = li.querySelector("span:not(.emoji)");
+            span.style.fontWeight = "bold";
+        }
+    </script>
 </body>
 </html>
