@@ -4,118 +4,88 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Sorteador Online</title>
-<link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
 <style>
     body {
         background-color: #1a1a1a;
-        color: #ffffff;
+        color: #fff;
+        text-align: center;
+        margin: 0;
+        padding: 0;
     }
-    .container {
-        margin-top: 50px;
-    }
-    .card {
-        background-color: #333333;
-    }
-    .card-header {
-        background-color: #444444;
-        border-bottom: none;
-    }
-    .form-control, .btn {
-        margin-top: 10px;
-    }
-    .btn {
-        width: 100%;
+    #container {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        height: 100vh;
     }
 </style>
 </head>
 <body>
-<div class="container">
-    <div class="card">
-        <div class="card-header text-center">
-            <h3>Sorteador Online</h3>
-        </div>
-        <div class="card-body">
-            <form id="sorteadorForm">
-                <div class="form-group">
-                    <label for="numeroInicial">Número Inicial:</label>
-                    <input type="number" class="form-control" id="numeroInicial" placeholder="Digite o número inicial">
+
+<div id="container">
+    <div class="container">
+        <div class="card bg-dark text-white">
+            <div class="card-body">
+                <h2 class="card-title">Sorteador Online</h2>
+                <div class="form-check form-check-inline">
+                    <input class="form-check-input" type="radio" name="tipo" id="numeros" checked>
+                    <label class="form-check-label" for="numeros">Sortear por Número</label>
+                </div>
+                <div class="form-check form-check-inline">
+                    <input class="form-check-input" type="radio" name="tipo" id="lista">
+                    <label class="form-check-label" for="lista">Sortear por Lista</label>
                 </div>
                 <div class="form-group">
-                    <label for="numeroFinal">Número Final:</label>
-                    <input type="number" class="form-control" id="numeroFinal" placeholder="Digite o número final">
+                    <label for="min">Mínimo:</label>
+                    <input type="number" class="form-control" id="min" min="1">
                 </div>
                 <div class="form-group">
-                    <label for="listaNumeros">Lista de Números (separados por vírgula):</label>
-                    <input type="text" class="form-control" id="listaNumeros" placeholder="Ex: 1, 2, 3, 4">
+                    <label for="max">Máximo:</label>
+                    <input type="number" class="form-control" id="max" min="1">
                 </div>
-                <div class="form-check">
-                    <input type="checkbox" class="form-check-input" id="repetirSorteio">
-                    <label class="form-check-label" for="repetirSorteio">Permitir repetir valores sorteados</label>
+                <div class="form-group" style="display: none;" id="listaInput">
+                    <label for="listaValores">Lista de Valores (separados por vírgula):</label>
+                    <input type="text" class="form-control" id="listaValores">
                 </div>
-                <button type="submit" class="btn btn-primary">Sortear</button>
-            </form>
-            <div id="resultado" class="mt-3" style="display: none;">
-                <h4 class="text-center">Resultado do Sorteio:</h4>
-                <p class="text-center" id="numeroSorteado"></p>
-                <button type="button" class="btn btn-primary btn-lg btn-block" id="sortearNovamente">Sortear Novamente</button>
+                <button type="button" class="btn btn-success" onclick="sortear()">Sortear</button>
+                <div id="resultado" class="mt-3"></div>
+                <button type="button" class="btn btn-primary mt-3" onclick="sortearNovamente()">Sortear Novamente</button>
             </div>
         </div>
     </div>
 </div>
-<script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
-<script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.5.4/dist/umd/popper.min.js"></script>
-<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+
 <script>
-    $(document).ready(function () {
-        $('#sorteadorForm').submit(function (event) {
-            event.preventDefault();
+    function sortear() {
+        var min = parseInt(document.getElementById("min").value);
+        var max = parseInt(document.getElementById("max").value);
+        var tipo = document.querySelector('input[name="tipo"]:checked').id;
+        var listaValores = document.getElementById("listaValores").value.split(",").map(Number);
 
-            var numeroInicial = parseInt($('#numeroInicial').val());
-            var numeroFinal = parseInt($('#numeroFinal').val());
-            var listaNumeros = $('#listaNumeros').val().split(',').map(function (item) {
-                return parseInt(item.trim());
-            });
-            var permitirRepetir = $('#repetirSorteio').is(':checked');
+        var numeroSorteado;
 
-            var numeroSorteado;
-
-            if (listaNumeros.length > 0 && listaNumeros[0] !== "") {
-                numeroSorteado = sortearNumeroLista(listaNumeros, permitirRepetir);
-            } else {
-                numeroSorteado = sortearNumeroRange(numeroInicial, numeroFinal, permitirRepetir);
-            }
-
-            $('#resultado').show();
-            $('#numeroSorteado').text(numeroSorteado);
-        });
-
-        $('#sortearNovamente').click(function () {
-            $('#resultado').hide();
-            $('#sorteadorForm')[0].reset();
-        });
-
-        function sortearNumeroRange(min, max, permitirRepetir) {
-            var sorteado = Math.floor(Math.random() * (max - min + 1)) + min;
-            if (!permitirRepetir) {
-                while (sorteados.includes(sorteado)) {
-                    sorteado = Math.floor(Math.random() * (max - min + 1)) + min;
-                }
-                sorteados.push(sorteado);
-            }
-            return sorteado;
+        if (tipo === "numeros") {
+            numeroSorteado = Math.floor(Math.random() * (max - min + 1)) + min;
+        } else {
+            numeroSorteado = listaValores[Math.floor(Math.random() * listaValores.length)];
         }
 
-        function sortearNumeroLista(lista, permitirRepetir) {
-            var sorteado = lista[Math.floor(Math.random() * lista.length)];
-            if (!permitirRepetir) {
-                while (sorteados.includes(sorteado)) {
-                    sorteado = lista[Math.floor(Math.random() * lista.length)];
-                }
-                sorteados.push(sorteado);
-            }
-            return sorteado;
-        }
+        document.getElementById("resultado").innerText = "Número Sorteado: " + numeroSorteado;
+    }
+
+    function sortearNovamente() {
+        document.getElementById("resultado").innerText = "";
+    }
+
+    document.getElementById("numeros").addEventListener("change", function() {
+        document.getElementById("listaInput").style.display = "none";
+    });
+
+    document.getElementById("lista").addEventListener("change", function() {
+        document.getElementById("listaInput").style.display = "block";
     });
 </script>
+
 </body>
 </html>
